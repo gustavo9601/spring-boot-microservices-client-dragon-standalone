@@ -17,36 +17,40 @@ import org.springframework.http.ResponseEntity;
 @EnableFeignClients // Habilitando el cliente Feign
 public class SpringBootMicroservicesClientStandaloneDragonApplication implements ApplicationRunner {
 
-	@Autowired
-	private EurekaClient eurekaClient;
+    @Autowired
+    private EurekaClient eurekaClient;
 
-	@Autowired
-	private DragonBallCharacterFeign dragonBallCharacterFeign;
+    @Autowired
+    private DragonBallCharacterFeign dragonBallCharacterFeign;
 
-	private static final Logger log = LoggerFactory.getLogger(SpringBootMicroservicesClientStandaloneDragonApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(SpringBootMicroservicesClientStandaloneDragonApplication.class);
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringBootMicroservicesClientStandaloneDragonApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootMicroservicesClientStandaloneDragonApplication.class, args);
+    }
 
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
-		log.info("Inicializo la app correctamente =)");
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("Inicializo la app correctamente =)");
 
-		// dragon-ball // aplication name de un microservicio registrado en Erukea
-		Application appClienteDragonBall = this.eurekaClient.getApplication("dragon-ball");
-		log.info("Obteniendo informacion de la a app dragon-ball");
-		log.info("Aplication Name {}", appClienteDragonBall.getName());
-		log.info("Aplication Instances {}", appClienteDragonBall.getInstances());
-		appClienteDragonBall.getInstances().forEach((appInstance) -> {
-			log.info("Ip: {}", appInstance.getIPAddr());
-			log.info("Port: {}", appInstance.getPort());
-		});
+        // dragon-ball // aplication name de un microservicio registrado en Erukea
+        Application appClienteDragonBall = this.eurekaClient.getApplication("dragon-ball");
+        log.info("Obteniendo informacion de la a app dragon-ball");
+        log.info("Aplication Name {}", appClienteDragonBall.getName());
+        log.info("Aplication Instances {}", appClienteDragonBall.getInstances());
+        appClienteDragonBall.getInstances().forEach((appInstance) -> {
+            log.info("Ip: {}", appInstance.getIPAddr());
+            log.info("Port: {}", appInstance.getPort());
+        });
 
 
-		log.info("Consumiendo un servicio con Feign");
-		ResponseEntity<String> applicationNameFeignService = this.dragonBallCharacterFeign.getApplicationName();
-		log.info("Respuesta body: {}", applicationNameFeignService.getBody());
-		log.info("Respuesta code: {}", applicationNameFeignService.getStatusCode());
-	}
+        for (int i = 0; i < 10; i++) {
+            log.info("Consumiendo un servicio con Feign Iteracion: {}", i);
+            ResponseEntity<String> applicationNameFeignService = this.dragonBallCharacterFeign.getApplicationName();
+            log.info("Respuesta body: {} - Iteracion: {}", applicationNameFeignService.getBody(), i);
+            log.info("Respuesta code: {} - Iteracion: {}", applicationNameFeignService.getStatusCode(), i);
+        }
+
+
+    }
 }
